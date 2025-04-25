@@ -63,3 +63,28 @@ export interface SummaryAggregate {
   latencyP95: number;
   latencyMax: number;
 }
+
+interface DesignerPhase {
+  duration: number;
+  arrivalRate: number;
+  rampTo: number;
+  name: string;
+}
+
+export interface DesignerConfig {
+  config: {
+    target: string;
+    phases: DesignerPhase[];
+    plugins: Record<string, object>;
+    apdex: { threshold: number };
+    ensure: { thresholds: { metric: string; value: number }[] };
+  };
+  scenarios: { flow: { action: string; params?: Record<string, unknown> }[] }[];
+}
+
+export interface DesignerPhaseInput {
+  duration: string;
+  arrivalRate: string;
+  rampTo: string;
+  name: string;
+}

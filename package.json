@@ -16,12 +16,14 @@
     "@mui/material": "^7.0.2",
     "@mui/system": "^7.0.2",
     "@mui/types": "^7.4.1",
+    "js-yaml": "^4.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
