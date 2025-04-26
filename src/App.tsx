@@ -7,8 +7,10 @@ import EndpointTable from './components/EndpointTable';
 import ConfigDesigner from './components/ConfigDesigner';
 import type { ArtilleryReport, ArtilleryIntermediateEntry, ChartDataPoint } from './types/artillery';
 import { getAggregateStats, getEndpointBreakdown } from './utility/common';
+import { useTranslation } from 'react-i18next';
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [report, setReport] = useState<ArtilleryReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
@@ -77,14 +79,20 @@ function App() {
           </Typography>
           <FormControlLabel
             control={<Switch checked={showConfig} onChange={(_, v) => setShowConfig(v)} color="secondary" />}
-            label={showConfig ? 'Config ON' : 'Config OFF'}
+            label={showConfig ? t('config_on') : t('config_off')}
             sx={{ ml: 2 }}
           />
           <FormControlLabel
             control={<Switch checked={darkMode} onChange={(_, v) => setDarkMode(v)} color="secondary" />}
-            label={darkMode ? 'Dark' : 'Light'}
+            label={darkMode ? t('dark') : t('light')}
             sx={{ ml: 2 }}
           />
+          {i18n.language !== 'en' && (
+            <Button onClick={() => i18n.changeLanguage('en')} color="inherit" size="small">EN</Button>
+          )}
+          {i18n.language !== 'es' && (
+            <Button onClick={() => i18n.changeLanguage('es')} color="inherit" size="small">ES</Button>
+          )}
           <IconButton color="inherit" component="a" href="https://www.artillery.io/" target="_blank" rel="noopener" size="large">
             <img src="/vite.svg" alt="Artillery" style={{ height: 32, filter: 'invert(1) grayscale(1) brightness(2)' }} />
           </IconButton>
@@ -93,15 +101,15 @@ function App() {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {showConfig ? (
           <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 4 }}>
-            <Tab label="Analyze Report" />
-            <Tab label="Design Config" />
+            <Tab label={t('analyze_report')} />
+            <Tab label={t('design_config')} />
           </Tabs>
         ) : null}
         {(!showConfig || tab === 0) && (
           <>
             <Paper sx={{ p: 4, mb: 4, background: theme.palette.background.paper }} elevation={3}>
               <Typography variant="h5" gutterBottom>
-                Upload Artillery Report
+                {t('upload_report')}
               </Typography>
               <Button
                 variant="contained"
@@ -110,11 +118,11 @@ function App() {
                 color="primary"
                 sx={{ mb: 2 }}
               >
-                Upload report.json
+                {t('upload_report_json')}
                 <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
               </Button>
               {error && <Typography color="error">{error}</Typography>}
-              {report && <Typography color="success.main">Report loaded successfully!</Typography>}
+              {report && <Typography color="success.main">{t('report_loaded')}</Typography>}
             </Paper>
             {report && aggregate && (
               <>
