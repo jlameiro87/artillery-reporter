@@ -95,7 +95,7 @@ function ConfigDesigner() {
         {/* More fields for apdex, ensure, scenarios, etc. can be added here */}
       </Paper>
       <Typography variant="h6" gutterBottom>YAML Output</Typography>
-      <Paper sx={{ p: 2, whiteSpace: 'pre', fontFamily: 'monospace', bgcolor: '#18181b' }}>
+      <Paper sx={{ p: 2, whiteSpace: 'pre', fontFamily: 'monospace', bgcolor: (theme) => theme.palette.background.paper, color: (theme) => theme.palette.text.primary }}>
         {yamlStr}
       </Paper>
     </Box>

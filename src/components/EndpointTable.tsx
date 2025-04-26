@@ -19,7 +19,7 @@ const EndpointTable: React.FC<EndpointTableProps> = ({ endpoints }) => (
     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
       Shows latency statistics for each tested endpoint. Useful for identifying slow or problematic API routes.
     </Typography>
-    <TableContainer component={Paper} sx={{ mb: 4, bgcolor: '#232326' }}>
+    <TableContainer component={Paper} sx={{ mb: 4, bgcolor: (theme) => theme.palette.background.paper }}>
       <Table size="small">
         <TableHead>
           <TableRow>

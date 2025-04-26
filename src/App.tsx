@@ -8,24 +8,12 @@ import ConfigDesigner from './components/ConfigDesigner';
 import type { ArtilleryReport, ArtilleryIntermediateEntry, ChartDataPoint } from './types/artillery';
 import { getAggregateStats, getEndpointBreakdown } from './utility/common';
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#e53935' }, // Artillery red
-    background: { default: '#18181b', paper: '#232326' },
-    text: { primary: '#fff', secondary: '#bdbdbd' },
-  },
-  typography: {
-    fontFamily: 'Inter, Roboto, Arial, sans-serif',
-    h6: { fontWeight: 700 },
-  },
-});
-
 function App() {
   const [report, setReport] = useState<ArtilleryReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [showConfig, setShowConfig] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -42,6 +30,23 @@ function App() {
     };
     reader.readAsText(file);
   };
+
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? 'dark' : 'light',
+      primary: { main: '#e53935' }, // Artillery red
+      background: darkMode
+        ? { default: '#18181b', paper: '#232326' }
+        : { default: '#fafafa', paper: '#fff' },
+      text: darkMode
+        ? { primary: '#fff', secondary: '#bdbdbd' }
+        : { primary: '#232326', secondary: '#616161' },
+    },
+    typography: {
+      fontFamily: 'Inter, Roboto, Arial, sans-serif',
+      h6: { fontWeight: 700 },
+    },
+  });
 
   // Prepare data for charts
   let chartData: ChartDataPoint[] = [];
@@ -73,6 +78,11 @@ function App() {
           <FormControlLabel
             control={<Switch checked={showConfig} onChange={(_, v) => setShowConfig(v)} color="secondary" />}
             label={showConfig ? 'Config ON' : 'Config OFF'}
+            sx={{ ml: 2 }}
+          />
+          <FormControlLabel
+            control={<Switch checked={darkMode} onChange={(_, v) => setDarkMode(v)} color="secondary" />}
+            label={darkMode ? 'Dark' : 'Light'}
             sx={{ ml: 2 }}
           />
           <IconButton color="inherit" component="a" href="https://www.artillery.io/" target="_blank" rel="noopener" size="large">
