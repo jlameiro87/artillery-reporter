@@ -12,4 +12,17 @@ export default defineConfig({
       ],
     }
   })],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendors': ['react', 'react-dom'],
+          'mui-vendors': ['@mui/material', '@mui/icons-material'],
+          'recharts-vendors': ['recharts'],
+          // add more as needed
+        }
+      }
+    },
+    chunkSizeWarningLimit: 700 // increase warning threshold (optional)
+  }
 })

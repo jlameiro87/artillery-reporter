@@ -52,3 +52,5 @@ export default tseslint.config({
   },
 })
 ```
+
+artillery run asciiart-load-test.yml --output report.json
