@@ -1,37 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { AppBar, Toolbar, Typography, Container, Button, Paper, CssBaseline, ThemeProvider, createTheme, IconButton, Tabs, Tab } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import SummaryCards from './components/SummaryCards';
-import DashboardCharts from './components/DashboardCharts';
-import EndpointTable from './components/EndpointTable';
 import ConfigDesigner from './components/ConfigDesigner';
-import type { ArtilleryReport, ArtilleryIntermediateEntry, ChartDataPoint } from './types/artillery';
-import { getAggregateStats, getEndpointBreakdown } from './utility/common';
+import type { ArtilleryReport } from './types/artillery';
+import { createResource } from './utility/common';
 import { useTranslation } from 'react-i18next';
 import Menu from './components/Menu';
+import ReportDashboard from './components/ReportDashboard';
 
 function App() {
   const { t, i18n } = useTranslation();
-  const [report, setReport] = useState<ArtilleryReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [showConfig, setShowConfig] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [resource, setResource] = useState<ReturnType<typeof createResource<ArtilleryReport>> | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const json = JSON.parse(evt.target?.result as string);
-        setReport(json);
-        setError(null);
-      } catch {
-        setError('Invalid JSON file.');
-      }
-    };
-    reader.readAsText(file);
+    const promise = new Promise<ArtilleryReport>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target?.result as string);
+          resolve(json);
+        } catch {
+          reject('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+    setResource(createResource(promise));
+    setError(null);
   };
 
   const theme = createTheme({
@@ -50,25 +51,6 @@ function App() {
       h6: { fontWeight: 700 },
     },
   });
-
-  // Prepare data for charts
-  let chartData: ChartDataPoint[] = [];
-  if (report?.intermediate) {
-    chartData = report.intermediate.map((entry: ArtilleryIntermediateEntry, idx: number) => ({
-      name: `T${idx + 1}`,
-      requests: entry.counters?.['http.requests'] || 0,
-      responses: entry.counters?.['http.responses'] || 0,
-      apdex_tolerated: entry.counters?.['apdex.tolerated'] || 0,
-      apdex_frustrated: entry.counters?.['apdex.frustrated'] || 0,
-      request_rate: entry.rates?.['http.request_rate'] || 0,
-      p50: entry.summaries?.['http.response_time']?.p50 || 0,
-      p90: entry.summaries?.['http.response_time']?.p90 || 0,
-      p99: entry.summaries?.['http.response_time']?.p99 || 0,
-    }));
-  }
-
-  const aggregate = getAggregateStats(report ?? {} as ArtilleryReport);
-  const endpoints = getEndpointBreakdown(report ?? {} as ArtilleryReport);
 
   return (
     <ThemeProvider theme={theme}>
@@ -114,14 +96,12 @@ function App() {
                 <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
               </Button>
               {error && <Typography color="error">{error}</Typography>}
-              {report && <Typography color="success.main">{t('report_loaded')}</Typography>}
+              {resource && <Typography color="success.main">{t('report_loaded')}</Typography>}
             </Paper>
-            {report && aggregate && (
-              <>
-                <SummaryCards aggregate={aggregate} />
-                <EndpointTable endpoints={endpoints} />
-                <DashboardCharts chartData={chartData} />
-              </>
+            {resource && (
+              <Suspense fallback={<Typography>Loading report...</Typography>}>
+                <ReportDashboard resource={resource} />
+              </Suspense>
             )}
           </>
         )}
