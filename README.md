@@ -187,3 +187,5 @@ export interface ArtilleryAggregate {
 ---
 
 For more, see the source code and comments in each component.
+artillery run asciiart-load-test.yml --output report.json
+artillery run jsonplaceholder-test.yml --output report1.json

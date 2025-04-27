@@ -1,0 +1,93 @@
+config:
+  target: "https://jsonplaceholder.typicode.com"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 50
+      name: "Warm up phase - gradually increase load"
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load phase"
+    - duration: 60
+      arrivalRate: 50
+      rampTo: 10
+      name: "Ramp down phase"
+  payload:
+    path: "users.csv"
+    fields:
+      - "userId"
+    skipHeader: true
+  http:
+    timeout: 10
+    pool: 10
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+  processor: "./custom-functions.cjs"
+
+scenarios:
+  - name: "API performance test"
+    weight: 7
+    flow:
+      - get:
+          url: "/posts"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+      - get:
+          url: "/posts/1"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+      - get:
+          url: "/posts/1/comments"
+          expect:
+            - statusCode: 200
+      - think: 3
+      - post:
+          url: "/posts"
+          json:
+            title: "Performance testing with Artillery"
+            body: "This is a test post from Artillery"
+            userId: "{{ userId }}"
+          expect:
+            - statusCode: 201
+      - put:
+          url: "/posts/1"
+          json:
+            id: 1
+            title: "Updated post title"
+            body: "Updated post body"
+            userId: 1
+          expect:
+            - statusCode: 200
+      - patch:
+          url: "/posts/1"
+          json:
+            title: "Patched title"
+          expect:
+            - statusCode: 200
+      - delete:
+          url: "/posts/1"
+          expect:
+            - statusCode: 200
+
+  - name: "User data operations"
+    weight: 3
+    flow:
+      - get:
+          url: "/users"
+          capture:
+            - json: "$[0].id"
+              as: "firstUserId"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/users/{{ firstUserId }}"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/users/{{ firstUserId }}/todos"
+          expect:
+            - statusCode: 200
+      - log: "Testing todos for user {{ firstUserId }}"
