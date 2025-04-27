@@ -21,7 +21,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ chartData }) => (
         <Tooltip content={({ active, payload, label }) => {
           if (!active || !payload) return null;
           return (
-            <Paper sx={{ p: 1, bgcolor: '#232326' }}>
+            <Paper sx={{ p: 1, bgcolor: (theme) => theme.palette.background.paper, color: (theme) => theme.palette.text.primary }}>
               <Typography variant="subtitle2">{label}</Typography>
               {payload.map((item, idx) => (
                 <Typography key={idx} color={item.color}>{item.name}: {item.value?.toLocaleString()}</Typography>
@@ -54,7 +54,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ chartData }) => (
           <Tooltip content={({ active, payload, label }) => {
             if (!active || !payload) return null;
             return (
-              <Paper sx={{ p: 1, bgcolor: '#232326' }}>
+              <Paper sx={{ p: 1, bgcolor: (theme) => theme.palette.background.paper, color: (theme) => theme.palette.text.primary }}>
                 <Typography variant="subtitle2">{label}</Typography>
                 {payload.map((item, idx) => (
                   <Typography key={idx} color={item.color}>{item.name}: {item.value} ms</Typography>
@@ -90,7 +90,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ chartData }) => (
           <Tooltip content={({ active, payload, label }) => {
             if (!active || !payload) return null;
             return (
-              <Paper sx={{ p: 1, bgcolor: '#232326' }}>
+              <Paper sx={{ p: 1, bgcolor: (theme) => theme.palette.background.paper, color: (theme) => theme.palette.text.primary }}>
                 <Typography variant="subtitle2">{label}</Typography>
                 {payload.map((item, idx) => (
                   <Typography key={idx} color={item.color}>{item.name}: {item.value}</Typography>

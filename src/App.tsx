@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Container, Button, Paper, CssBaseline, ThemeProvider, createTheme, IconButton, Tabs, Tab, Switch, FormControlLabel } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Button, Paper, CssBaseline, ThemeProvider, createTheme, IconButton, Tabs, Tab } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SummaryCards from './components/SummaryCards';
 import DashboardCharts from './components/DashboardCharts';
@@ -8,6 +8,7 @@ import ConfigDesigner from './components/ConfigDesigner';
 import type { ArtilleryReport, ArtilleryIntermediateEntry, ChartDataPoint } from './types/artillery';
 import { getAggregateStats, getEndpointBreakdown } from './utility/common';
 import { useTranslation } from 'react-i18next';
+import Menu from './components/Menu';
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -77,22 +78,13 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1, letterSpacing: 2 }}>
             Artillery Report Analyzer
           </Typography>
-          <FormControlLabel
-            control={<Switch checked={showConfig} onChange={(_, v) => setShowConfig(v)} color="secondary" />}
-            label={showConfig ? t('config_on') : t('config_off')}
-            sx={{ ml: 2 }}
+          <Menu
+            showConfig={showConfig}
+            setShowConfig={setShowConfig}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            language={i18n.language}
           />
-          <FormControlLabel
-            control={<Switch checked={darkMode} onChange={(_, v) => setDarkMode(v)} color="secondary" />}
-            label={darkMode ? t('dark') : t('light')}
-            sx={{ ml: 2 }}
-          />
-          {i18n.language !== 'en' && (
-            <Button onClick={() => i18n.changeLanguage('en')} color="inherit" size="small">EN</Button>
-          )}
-          {i18n.language !== 'es' && (
-            <Button onClick={() => i18n.changeLanguage('es')} color="inherit" size="small">ES</Button>
-          )}
           <IconButton color="inherit" component="a" href="https://www.artillery.io/" target="_blank" rel="noopener" size="large">
             <img src="/vite.svg" alt="Artillery" style={{ height: 32, filter: 'invert(1) grayscale(1) brightness(2)' }} />
           </IconButton>
