@@ -62,6 +62,52 @@ export function getEndpointBreakdown(report: ArtilleryReport) {
   });
 }
 
+// Extract error rates over time
+export function getErrorRates(report: ArtilleryReport) {
+  if (!report?.intermediate) return [];
+  return report.intermediate.map((entry, idx) => ({
+    name: `T${idx + 1}`,
+    errors: (entry.counters?.["http.requests"] || 0) - (entry.counters?.["http.responses"] || 0),
+    total: entry.counters?.["http.requests"] || 0,
+    errorRate: entry.counters?.["http.requests"]
+      ? ((entry.counters["http.requests"] - (entry.counters["http.responses"] || 0)) / entry.counters["http.requests"]) * 100
+      : 0,
+  }));
+}
+
+// Extract latency breakdown if available (DNS, connect, first byte, total)
+export function getLatencyBreakdown(report: ArtilleryReport) {
+  if (!report?.intermediate) return [];
+  return report.intermediate.map((entry, idx) => ({
+    name: `T${idx + 1}`,
+    dns: entry.summaries?.["http.dns"]?.mean || 0,
+    connect: entry.summaries?.["http.connect"]?.mean || 0,
+    firstByte: entry.summaries?.["http.first_byte"]?.mean || 0,
+    response: entry.summaries?.["http.response_time"]?.mean || 0,
+  }));
+}
+
+// Extract throughput metrics (bytes/sec over time)
+export function getThroughput(report: ArtilleryReport) {
+  if (!report?.intermediate) return [];
+  return report.intermediate.map((entry, idx) => ({
+    name: `T${idx + 1}`,
+    bytes: entry.counters?.["http.downloaded_bytes"] || 0,
+    throughput: entry.rates?.["http.throughput"] || 0,
+  }));
+}
+
+// Extract scenario completion rates (if available)
+export function getScenarioCompletion(report: ArtilleryReport) {
+  if (!report?.aggregate?.counters) return [];
+  const counters = report.aggregate.counters;
+  // Artillery may have keys like 'scenarios.completed' and 'scenarios.failed'
+  return [
+    { name: 'Completed', value: counters['scenarios.completed'] || 0 },
+    { name: 'Failed', value: counters['scenarios.failed'] || 0 },
+  ];
+}
+
 // Suspense resource utility
 export function createResource<T>(promise: Promise<T>) {
   let status = 'pending';

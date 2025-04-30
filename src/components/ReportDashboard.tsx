@@ -1,8 +1,12 @@
 import { ArtilleryIntermediateEntry, ArtilleryReport, ChartDataPoint } from "../types/artillery";
-import { createResource, getAggregateStats, getEndpointBreakdown } from "../utility/common";
+import { createResource, getAggregateStats, getEndpointBreakdown, getErrorRates, getLatencyBreakdown, getThroughput, getScenarioCompletion } from "../utility/common";
 import DashboardCharts from "./DashboardCharts";
 import EndpointTable from "./EndpointTable";
 import SummaryCards from "./SummaryCards";
+import ErrorRateChart from "./ErrorRateChart";
+import LatencyBreakdownChart from "./LatencyBreakdownChart";
+import ThroughputChart from "./ThroughputChart";
+import ScenarioCompletionChart from "./ScenarioCompletionChart";
 
 interface ReportDashboardProps {
   resource: ReturnType<typeof createResource<ArtilleryReport>>;
@@ -30,12 +34,20 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ resource }) => {
 
   const aggregate = getAggregateStats(report ?? ({} as ArtilleryReport));
   const endpoints = getEndpointBreakdown(report ?? ({} as ArtilleryReport));
+  const errorRates = getErrorRates(report);
+  const latencyBreakdown = getLatencyBreakdown(report);
+  const throughput = getThroughput(report);
+  const scenarioCompletion = getScenarioCompletion(report);
 
   return (
     <>
       <SummaryCards aggregate={aggregate} />
       <EndpointTable endpoints={endpoints} />
       <DashboardCharts chartData={chartData} />
+      <ErrorRateChart data={errorRates} />
+      <LatencyBreakdownChart data={latencyBreakdown} />
+      <ThroughputChart data={throughput} />
+      <ScenarioCompletionChart data={scenarioCompletion} />
     </>
   );
 };
