@@ -5,7 +5,7 @@ interface LatencyBreakdownChartProps {
 }
 
 const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({ data }) => (
-  <div style={{ width: '100%', height: 300 }}>
+  <div style={{ width: '100%', height: 300, marginTop: 60 }}>
     <h3>Latency Breakdown Over Time</h3>
     <ResponsiveContainer>
       <LineChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>

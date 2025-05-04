@@ -1,4 +1,4 @@
-import { ArtilleryReport, SummaryAggregate } from "../types/artillery";
+import { ArtilleryIntermediateEntry, ArtilleryReport, ChartDataPoint, SummaryAggregate } from "../types/artillery";
 
 // Helper to extract aggregate stats
 export function getAggregateStats(report: ArtilleryReport): SummaryAggregate {
@@ -44,9 +44,15 @@ export function getEndpointBreakdown(report: ArtilleryReport) {
   const h = agg.histograms || {};
   // Find endpoints from keys like plugins.metrics-by-endpoint./dino.codes.200
   const endpoints = Object.keys(c)
-    .filter(k => k.startsWith('plugins.metrics-by-endpoint./') && k.endsWith('.codes.200'))
-    .map(k => k.replace('plugins.metrics-by-endpoint.', '').replace('.codes.200', ''));
-  return endpoints.map(endpoint => {
+    .filter(
+      (k) =>
+        k.startsWith("plugins.metrics-by-endpoint./") &&
+        k.endsWith(".codes.200")
+    )
+    .map((k) =>
+      k.replace("plugins.metrics-by-endpoint.", "").replace(".codes.200", "")
+    );
+  return endpoints.map((endpoint) => {
     const codeKey = `plugins.metrics-by-endpoint.${endpoint}.codes.200`;
     const latencyKey = `plugins.metrics-by-endpoint.response_time.${endpoint}`;
     const latency = h[latencyKey] || {};
@@ -67,10 +73,15 @@ export function getErrorRates(report: ArtilleryReport) {
   if (!report?.intermediate) return [];
   return report.intermediate.map((entry, idx) => ({
     name: `T${idx + 1}`,
-    errors: (entry.counters?.["http.requests"] || 0) - (entry.counters?.["http.responses"] || 0),
+    errors:
+      (entry.counters?.["http.requests"] || 0) -
+      (entry.counters?.["http.responses"] || 0),
     total: entry.counters?.["http.requests"] || 0,
     errorRate: entry.counters?.["http.requests"]
-      ? ((entry.counters["http.requests"] - (entry.counters["http.responses"] || 0)) / entry.counters["http.requests"]) * 100
+      ? ((entry.counters["http.requests"] -
+          (entry.counters["http.responses"] || 0)) /
+          entry.counters["http.requests"]) *
+        100
       : 0,
   }));
 }
@@ -103,30 +114,58 @@ export function getScenarioCompletion(report: ArtilleryReport) {
   const counters = report.aggregate.counters;
   // Artillery may have keys like 'scenarios.completed' and 'scenarios.failed'
   return [
-    { name: 'Completed', value: counters['scenarios.completed'] || 0 },
-    { name: 'Failed', value: counters['scenarios.failed'] || 0 },
+    { name: "Completed", value: counters["scenarios.completed"] || 0 },
+    { name: "Failed", value: counters["scenarios.failed"] || 0 },
   ];
 }
 
 // Suspense resource utility
 export function createResource<T>(promise: Promise<T>) {
-  let status = 'pending';
+  let status = "pending";
   let result: T;
   const suspender = promise.then(
-    r => {
-      status = 'success';
+    (r) => {
+      status = "success";
       result = r;
     },
-    e => {
-      status = 'error';
+    (e) => {
+      status = "error";
       result = e;
     }
   );
   return {
     read() {
-      if (status === 'pending') throw suspender;
-      if (status === 'error') throw result;
+      if (status === "pending") throw suspender;
+      if (status === "error") throw result;
       return result;
-    }
+    },
   };
 }
+
+export function highlight(
+  valA: number,
+  valB: number,
+  better: "lower" | "higher"
+) {
+  if (valA === valB) return {};
+  if (
+    (better === "lower" && valA < valB) ||
+    (better === "higher" && valA > valB)
+  ) {
+    return { fontWeight: "bold", color: "#43a047" };
+  }
+  return { fontWeight: "bold", color: "#e53935" };
+}
+
+export const toChartData = (intermediate: ArtilleryIntermediateEntry[] | undefined): ChartDataPoint[] =>
+  (intermediate || []).map((entry, idx) => ({
+    name: `T${idx + 1}`,
+    requests: entry.counters?.["http.requests"] || 0,
+    responses: entry.counters?.["http.responses"] || 0,
+    apdex_tolerated: entry.counters?.["apdex.tolerated"] || 0,
+    apdex_frustrated: entry.counters?.["apdex.frustrated"] || 0,
+    request_rate: entry.rates?.["http.request_rate"] || 0,
+    p50: entry.summaries?.["http.response_time"]?.p50 || 0,
+    p90: entry.summaries?.["http.response_time"]?.p90 || 0,
+    p99: entry.summaries?.["http.response_time"]?.p99 || 0,
+  }));

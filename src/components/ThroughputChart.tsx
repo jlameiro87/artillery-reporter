@@ -10,7 +10,7 @@ interface ThroughputChartProps {
 const ThroughputChart: React.FC<ThroughputChartProps> = ({ data = [], dataA, dataB, overlay }) => {
   if (overlay && dataA && dataB) {
     return (
-      <div style={{ width: '100%', height: 300 }}>
+      <div style={{ width: '100%', height: 300, marginTop: 60 }}>
         <h3>Throughput Over Time (Overlay)</h3>
         <ResponsiveContainer>
           <LineChart margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
@@ -30,7 +30,7 @@ const ThroughputChart: React.FC<ThroughputChartProps> = ({ data = [], dataA, dat
   }
 
   return (
-    <div style={{ width: '100%', height: 300 }}>
+    <div style={{ width: '100%', height: 300, marginTop: 60 }}>
       <h3>Throughput Over Time</h3>
       <ResponsiveContainer>
         <LineChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
