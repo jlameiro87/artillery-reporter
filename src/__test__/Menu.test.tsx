@@ -10,7 +10,7 @@ describe('Menu', () => {
     render(
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={createTheme()}>
-          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="en" />
+          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="en" comparisonMode={false} setComparisonMode={() => {}} />
         </ThemeProvider>
       </I18nextProvider>
     );
@@ -21,7 +21,7 @@ describe('Menu', () => {
     render(
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={createTheme()}>
-          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="en" />
+          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="en" comparisonMode={false} setComparisonMode={() => {}} />
         </ThemeProvider>
       </I18nextProvider>
     );
@@ -33,7 +33,7 @@ describe('Menu', () => {
     render(
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={createTheme()}>
-          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="es" />
+          <Menu showConfig={true} setShowConfig={() => {}} darkMode={true} setDarkMode={() => {}} language="es" comparisonMode={false} setComparisonMode={() => {}} />
         </ThemeProvider>
       </I18nextProvider>
     );

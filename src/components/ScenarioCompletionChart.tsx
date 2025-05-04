@@ -8,7 +8,7 @@ const COLORS = ['#43a047', '#e53935'];
 
 const ScenarioCompletionChart: React.FC<ScenarioCompletionChartProps> = ({ data }) => (
   <div style={{ width: '100%', height: 300 }}>
-    <h3>Scenario Completion Rates</h3>
+    <h3 style={{ marginBottom: 32 }}>Scenario Completion Rates</h3>
     <ResponsiveContainer>
       <PieChart>
         <Pie

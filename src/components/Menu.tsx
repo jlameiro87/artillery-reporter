@@ -12,9 +12,11 @@ interface AppMenuProps {
   darkMode: boolean;
   setDarkMode: (v: boolean) => void;
   language: string;
+  comparisonMode: boolean;
+  setComparisonMode: (v: boolean) => void;
 }
 
-const Menu: React.FC<AppMenuProps> = ({ showConfig, setShowConfig, darkMode, setDarkMode }) => {
+const Menu: React.FC<AppMenuProps> = ({ showConfig, setShowConfig, darkMode, setDarkMode, comparisonMode, setComparisonMode }) => {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.resolvedLanguage || i18n.language;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -36,6 +38,11 @@ const Menu: React.FC<AppMenuProps> = ({ showConfig, setShowConfig, darkMode, set
           <ListItemIcon><SettingsBrightnessIcon fontSize="small" /></ListItemIcon>
           <ListItemText>{darkMode ? t('dark') : t('light')}</ListItemText>
           <Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} color="primary" />
+        </MenuItem>
+        <MenuItem onClick={() => setComparisonMode(!comparisonMode)}>
+          <ListItemIcon><BuildIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Comparison Mode</ListItemText>
+          <Switch checked={comparisonMode} onChange={() => setComparisonMode(!comparisonMode)} color="primary" />
         </MenuItem>
         <MenuItem disabled>
           <ListItemIcon><LanguageIcon fontSize="small" /></ListItemIcon>

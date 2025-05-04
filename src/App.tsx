@@ -7,6 +7,7 @@ import { createResource } from './utility/common';
 import { useTranslation } from 'react-i18next';
 import Menu from './components/Menu';
 import ReportDashboard from './components/ReportDashboard';
+import ComparisonDashboard from './components/ComparisonDashboard';
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -15,6 +16,9 @@ function App() {
   const [showConfig, setShowConfig] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [resource, setResource] = useState<ReturnType<typeof createResource<ArtilleryReport>> | null>(null);
+  const [comparisonMode, setComparisonMode] = useState(false);
+  const [resourceA, setResourceA] = useState<ReturnType<typeof createResource<ArtilleryReport>> | null>(null);
+  const [resourceB, setResourceB] = useState<ReturnType<typeof createResource<ArtilleryReport>> | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,6 +36,44 @@ function App() {
       reader.readAsText(file);
     });
     setResource(createResource(promise));
+    setError(null);
+  };
+
+  const handleFileUploadA = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const promise = new Promise<ArtilleryReport>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target?.result as string);
+          resolve(json);
+        } catch {
+          reject('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+    setResourceA(createResource(promise));
+    setError(null);
+  };
+
+  const handleFileUploadB = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const promise = new Promise<ArtilleryReport>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target?.result as string);
+          resolve(json);
+        } catch {
+          reject('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+    setResourceB(createResource(promise));
     setError(null);
   };
 
@@ -66,6 +108,8 @@ function App() {
             darkMode={darkMode}
             setDarkMode={setDarkMode}
             language={i18n.language}
+            comparisonMode={comparisonMode}
+            setComparisonMode={setComparisonMode}
           />
           <IconButton color="inherit" component="a" href="https://www.artillery.io/" target="_blank" rel="noopener" size="large">
             <img src="/vite.svg" alt="Artillery" style={{ height: 32, filter: 'invert(1) grayscale(1) brightness(2)' }} />
@@ -83,25 +127,65 @@ function App() {
           <>
             <Paper sx={{ p: 4, mb: 4, background: theme.palette.background.paper }} elevation={3}>
               <Typography variant="h5" gutterBottom>
-                {t('upload_report')}
+                {comparisonMode ? 'Upload Two Reports for Comparison' : t('upload_report')}
               </Typography>
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<CloudUploadIcon />}
-                color="primary"
-                sx={{ mb: 2 }}
-              >
-                {t('upload_report_json')}
-                <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
-              </Button>
-              {error && <Typography color="error">{error}</Typography>}
-              {resource && <Typography color="success.main">{t('report_loaded')}</Typography>}
+              {comparisonMode ? (
+                <>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<CloudUploadIcon />}
+                    color="primary"
+                    sx={{ mb: 2, mr: 2 }}
+                  >
+                    Upload Report A
+                    <input type="file" accept="application/json" hidden onChange={handleFileUploadA} />
+                  </Button>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<CloudUploadIcon />}
+                    color="secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    Upload Report B
+                    <input type="file" accept="application/json" hidden onChange={handleFileUploadB} />
+                  </Button>
+                  {(resourceA || resourceB) && (
+                    <Typography color="success.main" sx={{ mt: 1 }}>
+                      {resourceA ? 'Report A loaded. ' : ''}{resourceB ? 'Report B loaded.' : ''}
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<CloudUploadIcon />}
+                    color="primary"
+                    sx={{ mb: 2 }}
+                  >
+                    {t('upload_report_json')}
+                    <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
+                  </Button>
+                  {error && <Typography color="error">{error}</Typography>}
+                  {resource && <Typography color="success.main">{t('report_loaded')}</Typography>}
+                </>
+              )}
             </Paper>
-            {resource && (
-              <Suspense fallback={<Typography>Loading report...</Typography>}>
-                <ReportDashboard resource={resource} />
-              </Suspense>
+            {comparisonMode ? (
+              resourceA && resourceB && (
+                <Suspense fallback={<Typography>Loading reports...</Typography>}>
+                  <ComparisonDashboard resourceA={resourceA} resourceB={resourceB} />
+                </Suspense>
+              )
+            ) : (
+              resource && (
+                <Suspense fallback={<Typography>Loading report...</Typography>}>
+                  <ReportDashboard resource={resource} />
+                </Suspense>
+              )
             )}
           </>
         )}
