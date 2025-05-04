@@ -22,7 +22,7 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
     { key: 'latencyMax', label: 'Max Latency', better: 'lower' },
   ];
   return (
-    <Paper sx={{ mt: 6, p: 3 }}>
+    <Paper style={{ marginTop: 80 }} sx={{ mt: 6, p: 3 }}>
       <Typography variant="h5" gutterBottom>Advanced Comparison</Typography>
       <Typography variant="subtitle1" gutterBottom>
         Overlayed charts and a summary table highlight which report performed better for each metric.
@@ -41,7 +41,7 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
           <ThroughputChart dataA={getThroughput(reportA)} dataB={getThroughput(reportB)} overlay />
         </Box>
       </Box>
-      <Box sx={{ mt: 4 }}>
+      <Box style={{ marginTop: 50 }} sx={{ mt: 4 }}>
         <Typography variant="h6" gutterBottom>Summary of Differences</Typography>
         <Table size="small">
           <TableHead>

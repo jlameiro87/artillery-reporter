@@ -112,10 +112,10 @@ export function getThroughput(report: ArtilleryReport) {
 export function getScenarioCompletion(report: ArtilleryReport) {
   if (!report?.aggregate?.counters) return [];
   const counters = report.aggregate.counters;
-  // Artillery may have keys like 'scenarios.completed' and 'scenarios.failed'
+  // Use vusers.completed and vusers.failed as Artillery does not provide scenarios.completed/failed
   return [
-    { name: "Completed", value: counters["scenarios.completed"] || 0 },
-    { name: "Failed", value: counters["scenarios.failed"] || 0 },
+    { name: "Completed", value: counters["vusers.completed"] || 0 },
+    { name: "Failed", value: counters["vusers.failed"] || 0 },
   ];
 }
 
