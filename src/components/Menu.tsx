@@ -5,6 +5,7 @@ import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import BuildIcon from '@mui/icons-material/Build';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
+import { useLocalStorage } from '../utility/common';
 
 interface AppMenuProps {
   showConfig: boolean;
@@ -23,26 +24,36 @@ const Menu: React.FC<AppMenuProps> = ({ showConfig, setShowConfig, darkMode, set
   const openMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const closeMenu = () => setAnchorEl(null);
 
+  // Use localStorage for menu preferences
+  const [storedShowConfig, setStoredShowConfig] = useLocalStorage('menu_showConfig', showConfig);
+  const [storedDarkMode, setStoredDarkMode] = useLocalStorage('menu_darkMode', darkMode);
+  const [storedComparisonMode, setStoredComparisonMode] = useLocalStorage('menu_comparisonMode', comparisonMode);
+
+  // Sync parent state with localStorage state
+  React.useEffect(() => { setShowConfig(storedShowConfig); }, [storedShowConfig]);
+  React.useEffect(() => { setDarkMode(storedDarkMode); }, [storedDarkMode]);
+  React.useEffect(() => { setComparisonMode(storedComparisonMode); }, [storedComparisonMode]);
+
   return (
     <>
       <IconButton color="inherit" onClick={openMenu} size="large">
         <MenuIcon />
       </IconButton>
       <MuiMenu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
-        <MenuItem onClick={() => setShowConfig(!showConfig)}>
+        <MenuItem onClick={() => setStoredShowConfig(!storedShowConfig)}>
           <ListItemIcon><BuildIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>{showConfig ? t('config_on') : t('config_off')}</ListItemText>
-          <Switch checked={showConfig} onChange={() => setShowConfig(!showConfig)} color="primary" />
+          <ListItemText>{storedShowConfig ? t('config_on') : t('config_off')}</ListItemText>
+          <Switch checked={storedShowConfig} onChange={() => setStoredShowConfig(!storedShowConfig)} color="primary" />
         </MenuItem>
-        <MenuItem onClick={() => setDarkMode(!darkMode)}>
+        <MenuItem onClick={() => setStoredDarkMode(!storedDarkMode)}>
           <ListItemIcon><SettingsBrightnessIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>{darkMode ? t('dark') : t('light')}</ListItemText>
-          <Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} color="primary" />
+          <ListItemText>{storedDarkMode ? t('dark') : t('light')}</ListItemText>
+          <Switch checked={storedDarkMode} onChange={() => setStoredDarkMode(!storedDarkMode)} color="primary" />
         </MenuItem>
-        <MenuItem onClick={() => setComparisonMode(!comparisonMode)}>
+        <MenuItem onClick={() => setStoredComparisonMode(!storedComparisonMode)}>
           <ListItemIcon><BuildIcon fontSize="small" /></ListItemIcon>
           <ListItemText>Comparison Mode</ListItemText>
-          <Switch checked={comparisonMode} onChange={() => setComparisonMode(!comparisonMode)} color="primary" />
+          <Switch checked={storedComparisonMode} onChange={() => setStoredComparisonMode(!storedComparisonMode)} color="primary" />
         </MenuItem>
         <MenuItem disabled>
           <ListItemIcon><LanguageIcon fontSize="small" /></ListItemIcon>

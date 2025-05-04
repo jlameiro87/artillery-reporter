@@ -89,7 +89,7 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
           </TableHead>
           <TableBody>
             {metrics.map(m => (
-              <Tooltip key={m.key} title={metricExplanations[m.key]} arrow placement="top-start">
+              <Tooltip key={m.key} title={metricExplanations[m.key]} arrow placement="left-start">
                 <TableRow>
                   <TableCell>{m.label}</TableCell>
                   <TableCell align="right" style={highlight(aggA[m.key], aggB[m.key], m.better)}>{aggA[m.key]}</TableCell>

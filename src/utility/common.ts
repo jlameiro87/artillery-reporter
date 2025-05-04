@@ -1,4 +1,5 @@
 import { ArtilleryIntermediateEntry, ArtilleryReport, ChartDataPoint, SummaryAggregate } from "../types/artillery";
+import { useState, useEffect } from 'react';
 
 // Helper to extract aggregate stats
 export function getAggregateStats(report: ArtilleryReport): SummaryAggregate {
@@ -169,3 +170,26 @@ export const toChartData = (intermediate: ArtilleryIntermediateEntry[] | undefin
     p90: entry.summaries?.["http.response_time"]?.p90 || 0,
     p99: entry.summaries?.["http.response_time"]?.p99 || 0,
   }));
+
+// Generic hook for localStorage-backed state
+export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? (JSON.parse(item) as T) : initialValue;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(storedValue));
+    } catch (error) {
+      console.error(`Error writing localStorage key "${key}":`, error);
+    }
+  }, [key, storedValue]);
+
+  return [storedValue, setStoredValue];
+}
