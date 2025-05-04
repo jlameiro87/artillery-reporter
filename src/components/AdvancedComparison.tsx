@@ -82,9 +82,9 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Metric</TableCell>
-              <TableCell align="right">Report A</TableCell>
-              <TableCell align="right">Report B</TableCell>
+              <TableCell data-testid="metric-header">Metric</TableCell>
+              <TableCell align="right" data-testid="report-a-header">Report A</TableCell>
+              <TableCell align="right" data-testid="report-b-header">Report B</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -99,7 +99,7 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
             ))}
           </TableBody>
         </Table>
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" sx={{ mt: 2 }} data-testid="summary-line">
           {summaryLine}
         </Typography>
       </Box>

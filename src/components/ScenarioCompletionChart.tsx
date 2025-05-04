@@ -10,7 +10,7 @@ const ScenarioCompletionChart: React.FC<ScenarioCompletionChartProps> = ({ data 
   if (!data.some(item => item.value > 0)) return null;
   return (
     <div style={{ width: '100%', height: 300, marginTop: 60 }}>
-      <h3 style={{ marginBottom: 32 }}>Scenario Completion Rates</h3>
+      <h3 style={{ marginBottom: 32 }} data-testid="scenario-completion-title">Scenario Completion Rates</h3>
       <ResponsiveContainer>
         <PieChart>
           <Pie
@@ -20,7 +20,7 @@ const ScenarioCompletionChart: React.FC<ScenarioCompletionChartProps> = ({ data 
             cx="50%"
             cy="50%"
             outerRadius={80}
-            label
+            label={({ name }) => <tspan data-testid={`scenario-label-${name}`}>{name}</tspan>}
           >
             {data.map((_entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
