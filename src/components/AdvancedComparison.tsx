@@ -4,7 +4,7 @@ import ErrorRateChart from './ErrorRateChart';
 import ThroughputChart from './ThroughputChart';
 import { getAggregateStats, getErrorRates, getThroughput, highlight, toChartData } from '../utility/common';
 import { ArtilleryReport } from '../types/artillery';
-import { Paper, Typography, Box, Table, TableBody, TableCell, TableRow, TableHead } from '@mui/material';
+import { Paper, Typography, Box, Table, TableBody, TableCell, TableRow, TableHead, Tooltip } from '@mui/material';
 
 const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: ArtilleryReport }> = ({ reportA, reportB }) => {
   const aggA = getAggregateStats(reportA);
@@ -21,6 +21,42 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
     { key: 'latencyP95', label: 'P95 Latency', better: 'lower' },
     { key: 'latencyMax', label: 'Max Latency', better: 'lower' },
   ];
+
+  // Metric explanations for tooltips
+  const metricExplanations: { [key: string]: string } = {
+    requests: 'Total HTTP requests sent during the test. Higher is usually better.',
+    responses: 'Total HTTP responses received from the server. Higher is better.',
+    errors: 'Number of requests that did not get a valid response. Lower is better.',
+    apdex: 'User satisfaction score (1.0 is best, 0 is worst). Higher is better.',
+    throughput: 'Requests per second sent. Higher is better for most systems.',
+    data: 'Total amount of data downloaded during the test (bytes). Higher is better.',
+    sessionLength: 'Average time a simulated user spent in a session (ms). Lower is usually better.',
+    latencyMean: 'Average server response time (ms). Lower is better.',
+    latencyP95: '95% of requests were faster than this time (ms). Lower is better.',
+    latencyMax: 'Slowest response time observed (ms). Lower is better.',
+  };
+
+  // Determine which report is better overall
+  let aWins = 0, bWins = 0;
+  metrics.forEach(m => {
+    const a = aggA[m.key];
+    const b = aggB[m.key];
+    if (a === b) return;
+    if ((m.better === 'higher' && a > b) || (m.better === 'lower' && a < b)) {
+      aWins++;
+    } else {
+      bWins++;
+    }
+  });
+  let summaryLine = '';
+  if (aWins > bWins) {
+    summaryLine = 'System configuration corresponding to report A behaved better.';
+  } else if (bWins > aWins) {
+    summaryLine = 'System configuration corresponding to report B behaved better.';
+  } else {
+    summaryLine = 'Both system configurations performed similarly overall.';
+  }
+
   return (
     <Paper style={{ marginTop: 80 }} sx={{ mt: 6, p: 3 }}>
       <Typography variant="h5" gutterBottom>Advanced Comparison</Typography>
@@ -53,14 +89,19 @@ const AdvancedComparison: React.FC<{ reportA: ArtilleryReport, reportB: Artiller
           </TableHead>
           <TableBody>
             {metrics.map(m => (
-              <TableRow key={m.key}>
-                <TableCell>{m.label}</TableCell>
-                <TableCell align="right" style={highlight(aggA[m.key], aggB[m.key], m.better)}>{aggA[m.key]}</TableCell>
-                <TableCell align="right" style={highlight(aggB[m.key], aggA[m.key], m.better)}>{aggB[m.key]}</TableCell>
-              </TableRow>
+              <Tooltip key={m.key} title={metricExplanations[m.key]} arrow placement="top-start">
+                <TableRow>
+                  <TableCell>{m.label}</TableCell>
+                  <TableCell align="right" style={highlight(aggA[m.key], aggB[m.key], m.better)}>{aggA[m.key]}</TableCell>
+                  <TableCell align="right" style={highlight(aggB[m.key], aggA[m.key], m.better)}>{aggB[m.key]}</TableCell>
+                </TableRow>
+              </Tooltip>
             ))}
           </TableBody>
         </Table>
+        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+          {summaryLine}
+        </Typography>
       </Box>
     </Paper>
   );
